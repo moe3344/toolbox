@@ -4,6 +4,8 @@ import logging
 import docker
 import pyfiglet 
 import speedtest
+import shutil  # For disk space check
+
 
 
 
@@ -157,7 +159,24 @@ def dockerinfo(c, verbose=0):
 ####TODO: check outbound connections
     print(f"{'verify correct time':<20}: {'TBD'}")        
 ####TODO: add task to check remaining disk size on host system
-    print(f"{'Drive space':<20}: {'TBD'}")        
+    print(f"{'Drive space':<20}: {'TBD'}")   
+    @task(incrementable=['verbose'])
+def diskspace(c, verbose=0):
+    """Check remaining disk space on the host system"""
+    _set_log_level(verbose)
+    
+    logger.debug("Checking disk space...")
+
+    total, used, free = shutil.disk_usage("/")
+
+    print('-' * 40)
+    print(f"{'Total Disk Space':<20}: {total / (1024**3):.2f} GB")
+    print(f"{'Used Disk Space':<20}: {used / (1024**3):.2f} GB")
+    print(f"{'Free Disk Space':<20}: {free / (1024**3):.2f} GB")
+    print('-' * 40)
+
+    logger.debug(f"Disk space checked: Total={total}, Used={used}, Free={free}")
+     
 ####TODO: check outbound connections
     print(f"{'Firewall':<20}: {'TBD'}")        
     #declare -a urls=("https://www.google.com 200"
